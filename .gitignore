@@ -421,6 +421,19 @@ FodyWeavers.xsd
 # Built Visual Studio Code Extensions
 *.vsix
 
+# Java / Gradle project outputs
+.gradle/
+build/
+out/
+
+# React / Vite outputs
+frontend/dist/
+frontend/node_modules/
+
+# IntelliJ IDEA project metadata
+.idea/
+*.iml
+
 # Windows Installer files from build outputs
 *.cab
 *.msi
