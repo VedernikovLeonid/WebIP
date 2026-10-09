@@ -1,48 +1,46 @@
-# GARAGE 17 — лабораторная работа №1
+# GARAGE 17 — лабораторная работа №2
 
-Готовый учебный проект по ТЗ **«REST API (контроллеры)»** для предметной области «Система записи клиентов на ремонт и ТО автомобилей».
+Учебный проект по ТЗ **«REST API (многоуровневая архитектура)»** для предметной области «Система записи клиентов на ремонт и ТО автомобилей».
 
-## Что сделано по ТЗ
+## Реализация требований
 
-- Java Spring Boot приложение с Gradle-сборкой, открываемое в IntelliJ IDEA.
-- DTO `AppointmentDto`: все поля приватные, данные REST API передаются через DTO.
-- `AppointmentController` с `@RestController` и общим префиксом `@RequestMapping("/api/v1/appointments")`.
-- Предзаполненная приватная коллекция `LinkedHashMap<Long, AppointmentDto>`.
-- Полный CRUD: `GET`, `GET /{id}`, `POST`, `PUT /{id}`, `DELETE /{id}`.
-- Валидация входных данных и единый обработчик ошибок через `@RestControllerAdvice`.
-- CORS для React-клиента на `localhost:5173`.
-- Swagger UI и OpenAPI-документация.
-- React-клиент, который загружает записи из REST API и выполняет создание, редактирование, удаление и фильтрацию записей.
-- `data.json` с той же моделью данных, которая использовалась бы для json-server. Spring Boot API заменяет json-server для React-приложения.
+- Три сущности предметной области: клиент, автомобиль и запись на обслуживание.
+- Все сущности наследуются от `BaseEntity` и содержат getters/setters.
+- Связи реализованы ссылками: автомобиль ссылается на клиента, запись ссылается на клиента и автомобиль.
+- Для каждой сущности создан `@Repository`, являющийся наследником `MapRepository` и реализующий `CommonRepository`.
+- Для каждой сущности создан `@Service` с бизнес-логикой CRUD и зависимостями, переданными через конструктор.
+- Для каждой сущности создан `@RestController` с полным CRUD и общим префиксом `/api/v1`.
+- Для каждой сущности используются отдельные DTO запроса `Rq` и ответа `Rs`.
+- Входные данные проверяются через `@Valid` и Jakarta Validation.
+- Преобразование Entity <-> DTO вынесено в отдельные mapper-компоненты.
+- Добавлены три unit-теста: `ClientServiceTest`, `VehicleServiceTest`, `AppointmentServiceTest`.
+- React-клиент работает с новой многоуровневой REST API: перед созданием записи сохраняет клиента и автомобиль, затем создаёт запись по их идентификаторам.
 
-## Структура
+## Слои backend
 
 ```text
-WebIP/
-├── build.gradle                         # Gradle-конфигурация Spring Boot
-├── settings.gradle
-├── data.json                            # исходные демонстрационные данные
-├── backend/src/main/java/...            # Java-код приложения
-│   ├── AutoServiceApplication.java
-│   ├── config/CorsConfig.java
-│   ├── controller/AppointmentController.java
-│   ├── dto/AppointmentDto.java
-│   ├── exception/                       # 404, 400 и единый формат ошибок
-│   └── model/AppointmentStatus.java
-├── backend/src/main/resources/application.yml
-└── frontend/                            # React + Vite клиент
-    ├── package.json
-    ├── vite.config.js
-    └── src/App.jsx
+backend/src/main/java/ru/webip/autoservice/
+├── entity/       # BaseEntity, ClientEntity, VehicleEntity, AppointmentEntity
+├── repository/   # CommonRepository, MapRepository и репозитории сущностей
+├── service/      # бизнес-логика и CRUD
+├── mapper/       # преобразование Entity в Rq/Rs DTO и обратно
+├── dto/          # ClientRq/Rs, VehicleRq/Rs, AppointmentRq/Rs
+├── controller/   # REST-контроллеры
+├── config/       # CORS и демонстрационные данные
+└── exception/    # единый формат ошибок API
 ```
 
-## Запуск в IntelliJ IDEA
+Хранилище остаётся in-memory на основе `LinkedHashMap`, как требует учебное ТЗ. При старте `DemoDataInitializer` создаёт демонстрационных клиентов, автомобили и записи через сервисный слой.
 
-1. Откройте папку `WebIP` в IntelliJ IDEA.
-2. Импортируйте `build.gradle` как Gradle-проект и дождитесь загрузки зависимостей.
-3. Запустите класс `ru.webip.autoservice.AutoServiceApplication`.
-4. Проверьте API в [Swagger UI](http://localhost:8080/swagger-ui/index.html) или по адресу [OpenAPI JSON](http://localhost:8080/api-docs).
-5. В отдельном терминале запустите React-клиент:
+## Запуск
+
+Откройте корень `WebIP` в IntelliJ IDEA как Gradle-проект и запустите `ru.webip.autoservice.AutoServiceApplication`.
+
+Backend: [http://localhost:8080](http://localhost:8080)
+
+Swagger UI: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+React-клиент запускается отдельно:
 
 ```powershell
 cd frontend
@@ -50,16 +48,17 @@ npm install
 npm run dev
 ```
 
-6. Откройте [http://localhost:5173](http://localhost:5173).
+Клиент будет доступен на [http://localhost:5173](http://localhost:5173).
 
-## REST endpoints
+## Endpoint'ы
 
 | Метод | URL | Назначение |
 | --- | --- | --- |
-| GET | `/api/v1/appointments` | список записей, опциональный фильтр `?status=NEW` |
-| GET | `/api/v1/appointments/{id}` | одна запись |
-| POST | `/api/v1/appointments` | создать запись |
-| PUT | `/api/v1/appointments/{id}` | полностью обновить запись |
-| DELETE | `/api/v1/appointments/{id}` | удалить запись |
+| GET, POST | `/api/v1/clients` | список и создание клиентов |
+| GET, PUT, DELETE | `/api/v1/clients/{id}` | просмотр, изменение и удаление клиента |
+| GET, POST | `/api/v1/vehicles` | список и создание автомобилей |
+| GET, PUT, DELETE | `/api/v1/vehicles/{id}` | просмотр, изменение и удаление автомобиля |
+| GET, POST | `/api/v1/appointments` | список и создание записей |
+| GET, PUT, DELETE | `/api/v1/appointments/{id}` | просмотр, изменение и удаление записи |
 
-Для учебной лабораторной коллекция хранится в памяти приложения и заполняется предопределёнными DTO при запуске. При перезапуске данные возвращаются к демонстрационному состоянию.
+Проверка backend выполняется командой `gradlew.bat test`.

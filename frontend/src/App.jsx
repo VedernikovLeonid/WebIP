@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 
 const API_URL = '/api/v1/appointments';
+const CLIENTS_URL = '/api/v1/clients';
+const VEHICLES_URL = '/api/v1/vehicles';
 
 const STATUS_LABELS = {
   NEW: 'Новая',
@@ -13,6 +15,7 @@ const STATUS_LABELS = {
 const EMPTY_FORM = {
   clientName: '',
   phone: '',
+  email: '',
   carBrand: '',
   carModel: '',
   licensePlate: '',
@@ -90,10 +93,46 @@ function App() {
     setError('');
     setNotice('');
     try {
+      const clientsResponse = await fetch(CLIENTS_URL);
+      if (!clientsResponse.ok) throw new Error('Не удалось загрузить клиентов');
+      const clients = await clientsResponse.json();
+      const existingClient = clients.find((client) => client.phone === form.phone);
+      const clientPayload = { fullName: form.clientName, phone: form.phone, email: form.email || 'no-email@example.com' };
+      const clientResponse = await fetch(existingClient ? `${CLIENTS_URL}/${existingClient.id}` : CLIENTS_URL, {
+        method: existingClient ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(clientPayload)
+      });
+      if (!clientResponse.ok) throw new Error('Не удалось сохранить данные клиента');
+      const client = await clientResponse.json();
+
+      const vehiclesResponse = await fetch(VEHICLES_URL);
+      if (!vehiclesResponse.ok) throw new Error('Не удалось загрузить автомобили');
+      const vehicles = await vehiclesResponse.json();
+      const existingVehicle = vehicles.find((vehicle) => vehicle.licensePlate === form.licensePlate);
+      const vehiclePayload = { clientId: client.id, brand: form.carBrand, model: form.carModel, licensePlate: form.licensePlate };
+      const vehicleResponse = await fetch(existingVehicle ? `${VEHICLES_URL}/${existingVehicle.id}` : VEHICLES_URL, {
+        method: existingVehicle ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(vehiclePayload)
+      });
+      if (!vehicleResponse.ok) throw new Error('Не удалось сохранить данные автомобиля');
+      const vehicle = await vehicleResponse.json();
+
+      const appointmentPayload = {
+        clientId: client.id,
+        vehicleId: vehicle.id,
+        serviceType: form.serviceType,
+        appointmentDate: form.appointmentDate,
+        appointmentTime: form.appointmentTime,
+        masterName: form.masterName,
+        status: form.status,
+        comment: form.comment
+      };
       const response = await fetch(editingId ? `${API_URL}/${editingId}` : API_URL, {
         method: editingId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(appointmentPayload)
       });
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
@@ -114,6 +153,7 @@ function App() {
     setForm({
       clientName: appointment.clientName,
       phone: appointment.phone,
+      email: appointment.email || '',
       carBrand: appointment.carBrand,
       carModel: appointment.carModel,
       licensePlate: appointment.licensePlate,
@@ -224,6 +264,7 @@ function App() {
             <div className="form-grid">
               <label>Имя клиента<input name="clientName" value={form.clientName} onChange={updateField} placeholder="Например, Анна Петрова" required /></label>
               <label>Телефон<input name="phone" value={form.phone} onChange={updateField} placeholder="+7 900 000-00-00" required /></label>
+              <label>Email<input type="email" name="email" value={form.email} onChange={updateField} placeholder="client@example.com" required /></label>
               <label>Марка<input name="carBrand" value={form.carBrand} onChange={updateField} placeholder="Toyota" required /></label>
               <label>Модель<input name="carModel" value={form.carModel} onChange={updateField} placeholder="Camry" required /></label>
               <label>Госномер<input name="licensePlate" value={form.licensePlate} onChange={updateField} placeholder="А000АА 716" required /></label>

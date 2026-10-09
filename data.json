@@ -1,74 +1,17 @@
 {
+  "clients": [
+    { "id": 1, "fullName": "Алексей Смирнов", "phone": "+7 900 123-45-67", "email": "alexey@example.com" },
+    { "id": 2, "fullName": "Мария Волкова", "phone": "+7 901 222-18-09", "email": "maria@example.com" },
+    { "id": 3, "fullName": "Иван Петров", "phone": "+7 902 700-30-11", "email": "ivan@example.com" }
+  ],
+  "vehicles": [
+    { "id": 1, "clientId": 1, "brand": "Toyota", "model": "Camry", "licensePlate": "А123ВС 716" },
+    { "id": 2, "clientId": 2, "brand": "Kia", "model": "Rio", "licensePlate": "М456ОР 716" },
+    { "id": 3, "clientId": 3, "brand": "Hyundai", "model": "Solaris", "licensePlate": "Е777КХ 116" }
+  ],
   "appointments": [
-    {
-      "id": 1,
-      "clientName": "Алексей Смирнов",
-      "phone": "+7 900 123-45-67",
-      "carBrand": "Toyota",
-      "carModel": "Camry",
-      "licensePlate": "А123ВС 716",
-      "serviceType": "Замена масла и фильтров",
-      "appointmentDate": "2026-10-12",
-      "appointmentTime": "10:30",
-      "masterName": "Илья Кузнецов",
-      "status": "CONFIRMED",
-      "comment": "Проверить уровень технических жидкостей"
-    },
-    {
-      "id": 2,
-      "clientName": "Мария Волкова",
-      "phone": "+7 901 222-18-09",
-      "carBrand": "Kia",
-      "carModel": "Rio",
-      "licensePlate": "М456ОР 716",
-      "serviceType": "Компьютерная диагностика",
-      "appointmentDate": "2026-10-12",
-      "appointmentTime": "13:00",
-      "masterName": "Дмитрий Орлов",
-      "status": "NEW",
-      "comment": "Появился индикатор двигателя"
-    },
-    {
-      "id": 3,
-      "clientName": "Иван Петров",
-      "phone": "+7 902 700-30-11",
-      "carBrand": "Hyundai",
-      "carModel": "Solaris",
-      "licensePlate": "Е777КХ 116",
-      "serviceType": "Шиномонтаж",
-      "appointmentDate": "2026-10-13",
-      "appointmentTime": "09:00",
-      "masterName": "Илья Кузнецов",
-      "status": "IN_PROGRESS",
-      "comment": "Комплект летних шин в багажнике"
-    },
-    {
-      "id": 4,
-      "clientName": "Ольга Никитина",
-      "phone": "+7 903 444-20-20",
-      "carBrand": "Lada",
-      "carModel": "Vesta",
-      "licensePlate": "Р222АА 716",
-      "serviceType": "Замена тормозных колодок",
-      "appointmentDate": "2026-10-14",
-      "appointmentTime": "15:30",
-      "masterName": "Николай Беляев",
-      "status": "NEW",
-      "comment": "Передние колодки"
-    },
-    {
-      "id": 5,
-      "clientName": "Сергей Морозов",
-      "phone": "+7 904 555-44-33",
-      "carBrand": "Skoda",
-      "carModel": "Octavia",
-      "licensePlate": "Т555РТ 116",
-      "serviceType": "Техническое обслуживание ТО-2",
-      "appointmentDate": "2026-10-15",
-      "appointmentTime": "11:00",
-      "masterName": "Дмитрий Орлов",
-      "status": "COMPLETED",
-      "comment": "Забрать автомобиль после 18:00"
-    }
+    { "id": 1, "clientId": 1, "vehicleId": 1, "serviceType": "Замена масла и фильтров", "appointmentDate": "2026-10-12", "appointmentTime": "10:30", "masterName": "Илья Кузнецов", "status": "CONFIRMED", "comment": "Проверить уровень технических жидкостей" },
+    { "id": 2, "clientId": 2, "vehicleId": 2, "serviceType": "Компьютерная диагностика", "appointmentDate": "2026-10-12", "appointmentTime": "13:00", "masterName": "Дмитрий Орлов", "status": "NEW", "comment": "Появился индикатор двигателя" },
+    { "id": 3, "clientId": 3, "vehicleId": 3, "serviceType": "Шиномонтаж", "appointmentDate": "2026-10-13", "appointmentTime": "09:00", "masterName": "Илья Кузнецов", "status": "IN_PROGRESS", "comment": "Комплект летних шин в багажнике" }
   ]
 }
